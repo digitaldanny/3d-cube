@@ -7,6 +7,24 @@
 
 #include "usartd0.h"
 
+// Initialize UART module for asynch serial comm to com port for transferring
+// data between GUI and processor. CPU clock = 16 Mhz, Baud rate = 9600
+config_uart_d0_16Mhz_9600(void)
+{
+	#define BSEL_VAL 11				// Bottom byte of the BSEL value
+	#define BSCALE_VAL 0x90			// Top nibble is the BSCALE value, bottom nibble is the rest of the BSEL
+	
+	cli();
+	USARTD0.CTRLA		= 0b00010000;		// Turn on the DREINT and RXCINT so my interrupts can be triggered
+	USARTD0.CTRLB		= 0b00011000;		// TRANSMIT enabled = bit 3, RECIEVE enabled = bit 4
+	USARTD0.BAUDCTRLA	= BSEL_VAL;			// Initialize the first nibble of the BAUD RATE (11:8) and the BSCALE (3:0) value
+	USARTD0.BAUDCTRLB	= BSCALE_VAL;		// Initialize the BAUD RATE (7:0)
+	USARTD0.CTRLC		= 0b00110011;		// Protocol configs - 00 (async) 11 (odd parity) 0 (1 stop bit) 011 (data size is 8 bits)
+	PORTD.DIRSET		= 0b01111000;		// Initialize pin 3 as an output for TRANSMITTING DATA and pin 2 as an INPUT for RECEIVING DATA
+	PORTD.OUTSET		= 0b01111000;		// Initialize
+	sei();	
+}
+
 // INITIALIZE USARTD0 FOR ASYNCHRONOUS SERIAL COMMUNICATION TO PUTTY
 //	NOTE: Initialized to run at 57,600 Hz baud rate BSEL = 150
 //	PARITY: ODD

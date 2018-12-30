@@ -7,18 +7,22 @@
  *				into internal SRAM. The user can determine to load pattern data to SRAM or to just display
  *				on the LEDs. User can only load a frame of pattern data at a time, not a layer of frame data.
  *				
- * Specifications:	CPU Clock: 2 MHz
+ * Specifications:	CPU Clock: 16 MHz
  *					UART Baud Rate: 9600
  */ 
 
 #include <avr/io.h>
-#include "usartd0.h"
+#include "libs/uart/usartd0.h"
 
-// GUI interfacing module
 int main(void)
 {
+	// module configurations
+	config_uart_d0_16Mhz_9600();	// initialize USB uart on port D. CPU clock = 16Mhz, Baud rate = 9600
+	
+	// program executes here
     while (1) 
     {
 		
     }
 }
+

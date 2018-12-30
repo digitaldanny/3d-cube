@@ -14,6 +14,10 @@
 #ifndef USARTD0_H_
 #define USARTD0_H_
 
+// Initialize UART module for asynch serial comm to com port for transferring
+// data between GUI and processor. CPU clock = 16 Mhz, Baud rate = 9600
+config_uart_d0_16Mhz_9600(void);
+
 // INITIALIZE USARTD0 FOR ASYNCHRONOUS SERIAL COMMUNICATION TO PUTTY
 //	NOTE: Initialized to run at 57,600 Hz baud rate BSEL = 150
 //	PARITY: ODD
