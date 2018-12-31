@@ -1,6 +1,14 @@
 # Prerequisites
 *.d
 
+# Atmel generated files
+*.hex
+*.lss
+*.elf
+*.eep
+*.map
+*srec
+
 # Compiled Object files
 *.slo
 *.lo
