@@ -9,19 +9,20 @@
 
 // Initialize UART module for asynch serial comm to com port for transferring
 // data between GUI and processor. CPU clock = 16 Mhz, Baud rate = 9600
-config_uart_d0_16Mhz_9600(void)
+// Uses odd parity, 1 stop bit, and data size of 8 bits.
+void config_uart_d0_16Mhz_9600(void)
 {
-	#define BSEL_VAL 11				// Bottom byte of the BSEL value
-	#define BSCALE_VAL 0x90			// Top nibble is the BSCALE value, bottom nibble is the rest of the BSEL
+	#define BSEL_VAL 1651			// Bottom byte of the BSEL value
+	#define BSCALE_VAL 0xC			// Top nibble is the BSCALE value, bottom nibble is the rest of the BSEL
 	
 	cli();
-	USARTD0.CTRLA		= 0b00010000;		// Turn on the DREINT and RXCINT so my interrupts can be triggered
-	USARTD0.CTRLB		= 0b00011000;		// TRANSMIT enabled = bit 3, RECIEVE enabled = bit 4
-	USARTD0.BAUDCTRLA	= BSEL_VAL;			// Initialize the first nibble of the BAUD RATE (11:8) and the BSCALE (3:0) value
-	USARTD0.BAUDCTRLB	= BSCALE_VAL;		// Initialize the BAUD RATE (7:0)
-	USARTD0.CTRLC		= 0b00110011;		// Protocol configs - 00 (async) 11 (odd parity) 0 (1 stop bit) 011 (data size is 8 bits)
-	PORTD.DIRSET		= 0b01111000;		// Initialize pin 3 as an output for TRANSMITTING DATA and pin 2 as an INPUT for RECEIVING DATA
-	PORTD.OUTSET		= 0b01111000;		// Initialize
+	USARTD0.CTRLA		= USART_RXCINTLVL_HI_gc;							// Turn on the0 RXCINT so received data triggers ISR in main 
+	USARTD0.CTRLB		= 0b00011000;										// TRANSMIT enabled = bit 3, RECIEVE enabled = bit 4
+	USARTD0.BAUDCTRLA	= (BSEL_VAL & 0xFF);								// Initialize the first nibble of the BAUD RATE (11:8) and the BSCALE (3:0) value
+	USARTD0.BAUDCTRLB	= ((BSCALE_VAL << 4) & 0xF0) | ( (BSEL_VAL >> 8) & 0x0F );	// Initialize the BAUD RATE (7:0)
+	USARTD0.CTRLC		= 0b00110011;										// Protocol configs - 00 (async) 11 (odd parity) 0 (1 stop bit) 011 (data size is 8 bits)
+	PORTD.DIRSET		= 0b01111000;										// Initialize pin 3 as an output for TRANSMITTING DATA and pin 2 as an INPUT for RECEIVING DATA
+	PORTD.OUTSET		= 0b01111000;										// Initialize
 	sei();	
 }
 

@@ -34,34 +34,45 @@ LINKER_SCRIPT_DEP:=
 # Every subdirectory with source files must be described here
 SUBDIRS :=  \
 ../libs \
+../libs/timer \
 ../libs/uart/
 
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
+../libs/timer/tcc0.c \
 ../libs/uart/usartd0.c \
 ../main.c
 
 
-PREPROCESSING_SRCS += 
+PREPROCESSING_SRCS +=  \
+../clock.s
 
 
 ASM_SRCS += 
 
 
 OBJS +=  \
+clock.o \
+libs/timer/tcc0.o \
 libs/uart/usartd0.o \
 main.o
 
 OBJS_AS_ARGS +=  \
+clock.o \
+libs/timer/tcc0.o \
 libs/uart/usartd0.o \
 main.o
 
 C_DEPS +=  \
+clock.d \
+libs/timer/tcc0.d \
 libs/uart/usartd0.d \
 main.d
 
 C_DEPS_AS_ARGS +=  \
+clock.d \
+libs/timer/tcc0.d \
 libs/uart/usartd0.d \
 main.d
 
@@ -79,6 +90,13 @@ LINKER_SCRIPT_DEP+=
 
 
 # AVR32/GNU C Compiler
+libs/timer/tcc0.o: ../libs/timer/tcc0.c
+	@echo Building file: $<
+	@echo Invoking: AVR/GNU C Compiler : 5.4.0
+	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\include"  -O1 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=atxmega128a1u -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\gcc\dev\atxmega128a1u" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
 libs/uart/usartd0.o: ../libs/uart/usartd0.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler : 5.4.0
@@ -101,6 +119,13 @@ libs/uart/usartd0.o: ../libs/uart/usartd0.c
 
 
 # AVR32/GNU Assembler
+./clock.o: .././clock.s
+	@echo Building file: $<
+	@echo Invoking: AVR/GNU Assembler : 5.4.0
+	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE) -Wa,-gdwarf2 -x assembler-with-cpp -c -mmcu=atxmega128a1u -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\gcc\dev\atxmega128a1u" -I "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\include"  -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)" -Wa,-g   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
 
 
 
