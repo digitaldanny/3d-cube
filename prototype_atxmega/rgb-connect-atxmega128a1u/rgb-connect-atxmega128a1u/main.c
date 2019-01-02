@@ -9,6 +9,10 @@
  *				
  * Specifications:	CPU Clock: 16 MHz
  *					UART Baud Rate: 9600
+ *
+ *					PORTA(3-0) = GND Layer controls
+ *					PORTC(7-0) = LED Pins 15-8
+ *					PORTF(7-0) = LED Pins 7-0
  */ 
 
 /*
@@ -23,12 +27,22 @@ TODO:
 #include <avr/interrupt.h>
 #include "libs/uart/usartd0.h"
 #include "libs/timer/tcc0.h"
-
-// prototypes---------------------------------
-extern void config_clock( void );
+#include "libs/funcs/rgb-connect-funcs.h"
 
 // globals------------------------------------
 volatile uint8_t main_sendNextData = 0x0;
+volatile uint8_t patterns[150*8*5];
+
+// global typedefs----------------------------
+typedef enum {
+	LAYER0,
+	LAYER1,
+	LAYER2,
+	LAYER3
+} layer_t;
+
+// prototypes---------------------------------
+extern void config_clock( void );
 
 // program code-------------------------------
 int main(void)
@@ -36,16 +50,18 @@ int main(void)
 	// module configurations
 	config_clock();					// initialize CPU clock to 16 MHz
 	config_uart_d0_16Mhz_9600();	// initialize USB uart on port D. CPU clock = 16Mhz, Baud rate = 9600
-	config_tcc0_16Mhz();	// initialize TIMER/COUNTER C0 to trigger at a frequency of 30Hz
+	config_tcc0_16Mhz();			// initialize TIMER/COUNTER C0 to trigger at a frequency of 30Hz
+	config_led_ports();				// initialize output ports to control LEDs
+	
+	// initialize patterns to 0
+	for ( int i = 0; i < sizeof(patterns) - 1; i++ )
+	{
+		patterns[i] = 0;
+	}
 	
 	// enable interrupts in main code
 	PMIC.CTRL = PMIC_HILVLEN_bm | PMIC_MEDLVLEN_bm | PMIC_LOLVLEN_bm;	// enable all level of interrupts
-	sei();	
-	
-	// port configurations
-	PORTA.DIRSET = 0xFF;	// at least 20 output signals are required to control all 64 LEDs
-	PORTC.DIRSET = 0xFF;	// at least 20 output signals are required to control all 64 LEDs
-	PORTF.DIRSET = 0xFF;	// at least 20 output signals are required to control all 64 LEDs					
+	sei();					
 	
 	// program executes here
     while (1) 
