@@ -1,0 +1,43 @@
+classdef gui_be < handle
+    %GUI back end properties and methods. Connects to GUI front end through
+    %app designer 
+    
+    properties
+        
+        comNum = 0;
+        baudRate = 0;
+        ser;
+        
+    end
+    
+    methods
+        
+        % initialize a serial connection to COM port
+        % defined by the user in FE.
+        % OUTPUT: Returns "true" if connected and "false" if no connection
+        function status = connectToComPort( obj, com, baud )
+          
+            status = false;         % default return is false - turns true if there is a connection
+            obj.comNum = com;       % update class properties
+            obj.baudRate = baud;    % update class properties
+            
+            % configure UART module for communication to processor
+            temp = sprintf( 'COM%d', com ); % concatenate COM and com port nu
+            obj.ser = serial('COM' + com);  % user defined COM port number from device manager
+            fopen(obj.ser);                 % open C)OM port communication`
+            
+            % if connected to the COM port, configure the serial port
+            if strcmp(obj.ser.Status,'open')
+                obj.ser.BaudRate = baud;        % user defined baud rate, default = 9600
+                obj.ser.Parity = 'odd';         % odd parity bit - REMOVE LATER
+                obj.ser.DataBits = 8;           % 8 data bits per message
+                obj.ser.OutputBufferSize = 10;   % 1 byte for processor message, 1 byte frame #, 8 bytes for pattern data
+                status = true;
+            end
+            
+        end
+        
+    end
+    
+end
+
