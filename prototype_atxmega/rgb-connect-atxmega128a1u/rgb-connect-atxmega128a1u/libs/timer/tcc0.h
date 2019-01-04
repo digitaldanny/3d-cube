@@ -16,5 +16,6 @@ void tcc0_init( void );
 void config_tcc0_16Mhz ( void );
 void tcc0_1Hz ( void );
 void tcc0_200Hz ( void );
+void tcf0_init ( void );
 
 #endif /* TCC0_H_ */
