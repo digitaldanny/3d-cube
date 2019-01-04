@@ -9,7 +9,7 @@
 #include "tcc0.h"
 
 // Initialize TIMER-COUNTER 00000 ON PORT CCCCCC to produce an
-// overflow flag once a second (200 Hz) and send to event channel 0
+// overflow flag at a frequency of 200 Hz
 void tcc0_init( void )
 {
 	// Overflow will be triggered every 1 second
@@ -33,7 +33,7 @@ void config_tcc0_16Mhz ( void )
 {
 	tcc0_init();
 	TCC0.CTRLA = 0x07;		// CLK / 1024
-	TCC0.PER = 16000000 / (1024 * 30);	
+	TCC0.PER = 16000000 / 1024 / 240;	
 }
 
 void tcc0_1Hz ( void )
@@ -48,4 +48,48 @@ void tcc0_200Hz ( void )
 	// Overflow will be triggered at a rate of 200 Hz
 	TCC0.CTRLA = 0x04;		// CLK / 8								   // CONFIGS FOR 200 Hz OVF INTERRUPT
 	TCC0.PER = 1250;		// PER required for 200 Hz				   // CONFIGS FOR 200 Hz OVF INTERRUPT	
+}
+
+// TCC1 INIT --------------------------------------------------------------------------------------------------
+
+// Initialize TIMER-COUNTER 1111111 ON PORT CCCCCC to produce an
+// overflow flag (10 Hz) and send to event channel 0
+void tcc1_init( void )
+{
+	// Overflow will be triggered every 1 second
+	TCC1.CTRLA = 0x07;		// CLK / 1024
+	TCC1.PER = 16000000 / 1024 / 10;
+	
+	// Event action controls
+	#define EVACT_sel	(0x00 << 5)		// Event action disabled
+	#define EVDLY_sel	(0x00 << 4)		// Event delay by 1 clock cycle is disabled
+	#define EVSEL_sel	(0x08 << 0)		// Event channel 0 is used to the overflow
+	TCC1.CTRLD = EVACT_sel | EVDLY_sel | EVSEL_sel;
+	
+	// enable low level interrupts
+	#define ERRINTLVL_sel	(0x00 << 2)		// Timer error interrupt level OFF
+	#define OVFINTLVL_sel	(0x10 << 0)		// Overflow interrupt level MED
+	TCC1.INTCTRLA = ERRINTLVL_sel | OVFINTLVL_sel;
+}
+
+// TCF0 INIT --------------------------------------------------------------------------------------------------
+
+// Initialize TIMER-COUNTER 1111111 ON PORT FFFFFF to produce an
+// overflow flag (30 Hz)
+void tcf0_init( void )
+{
+	// Overflow will be triggered every 1 second
+	TCF0.CTRLA = 0x07;		// CLK / 1024
+	TCF0.PER = 16000000 / 1024 / 60;
+	
+	// Event action controls
+	#define EVACT_sel	(0x00 << 5)		// Event action disabled
+	#define EVDLY_sel	(0x00 << 4)		// Event delay by 1 clock cycle is disabled
+	#define EVSEL_sel	(0x08 << 0)		// Event channel 0 is used to the overflow
+	TCF0.CTRLD = EVACT_sel | EVDLY_sel | EVSEL_sel;
+	
+	// enable low level interrupts
+	#define ERRINTLVL_sel	(0x00 << 2)		// Timer error interrupt level OFF
+	#define OVFINTLVL_sel	(0x01 << 0)		// Overflow interrupt level MED
+	TCF0.INTCTRLA = ERRINTLVL_sel | OVFINTLVL_sel;
 }
