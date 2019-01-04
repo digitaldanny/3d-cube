@@ -123,6 +123,12 @@
     <Compile Include="clock.s">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="libs\adc\adca.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="libs\adc\adca.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="libs\funcs\rgb-connect-funcs.h">
       <SubType>compile</SubType>
     </Compile>
@@ -145,6 +151,7 @@
   <ItemGroup>
     <Folder Include="libs" />
     <Folder Include="libs\funcs" />
+    <Folder Include="libs\adc" />
     <Folder Include="libs\timer" />
     <Folder Include="libs\uart\" />
   </ItemGroup>

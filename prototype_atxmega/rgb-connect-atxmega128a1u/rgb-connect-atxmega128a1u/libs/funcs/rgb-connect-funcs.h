@@ -3,19 +3,35 @@
  *
  * Created: 1/2/2019 12:22:37 AM
  *  Author: Daniel Hamilton
+ * Description: These are functions that will be used in the main program "main.c"
+ *				To organize the code, the functions have been placed in this separate
+ *				header file.
  */ 
 
 
-#ifndef RGB-CONNECT-FUNCS_H_
-#define RGB-CONNECT-FUNCS_H_
+#ifndef RGB_CONNECT_FUNCS_H_
+#define RGB_CONNECT_FUNCS_H_
 
 // global typedefs----------------------------
-typedef enum {
+typedef enum {	// only 4 layers exist on the current build. Will need to be updated if larger cubes are designed
 	LAYER0,
 	LAYER1,
 	LAYER2,
 	LAYER3
 } layer_t;
+
+typedef enum {	// allows a maximum of 10 patterns to be generated (NOTE: No memory is alloted for PATTERNS 5-9)
+	PATTERN0,
+	PATTERN1,
+	PATTERN2,
+	PATTERN3,
+	PATTERN4,
+	PATTERN5,
+	PATTERN6,
+	PATTERN7,
+	PATTERN8,
+	PATTERN9
+} pattern_t;
 
 // symbolic defs------------------------------
 #define L15 PIN7_bm		// PORT CCCCCC - Set to 1 so the layer can activate
@@ -41,13 +57,16 @@ typedef enum {
 
 
 // Port A activates a specific layer---------------------------------------------------------
-void activateLayer( layer_t layer )
+layer_t activateLayer( layer_t layer )
 {
+	layer_t nextLayer;	// tells the main program what the next layer state will be
+	
 	// activate layer 0 and disable all other layers
 	if ( layer == LAYER0 )
 	{
 		PORTA.OUTSET = LYR1 | LYR2 | LYR3;
 		PORTA.OUTCLR = LYR0;
+		nextLayer = LAYER1;
 	}
 	
 	// activate layer 1 and disable all other layers
@@ -55,6 +74,7 @@ void activateLayer( layer_t layer )
 	{
 		PORTA.OUTSET = LYR0 | LYR2 | LYR3;
 		PORTA.OUTCLR = LYR1;
+		nextLayer = LAYER2;
 	}
 	
 	// activate layer 2 and disable all other layers
@@ -62,6 +82,7 @@ void activateLayer( layer_t layer )
 	{
 		PORTA.OUTSET = LYR0 | LYR1 | LYR3;
 		PORTA.OUTCLR = LYR2;
+		nextLayer = LAYER3;
 	}
 	
 	// activate layer 3 and disable all other layers
@@ -69,9 +90,18 @@ void activateLayer( layer_t layer )
 	{
 		PORTA.OUTSET = LYR0 | LYR1 | LYR2;
 		PORTA.OUTCLR = LYR3;
+		nextLayer = LAYER0;
 	}
 	
+	return nextLayer;
 };
+
+// enable interrupts in main code
+void config_interrupts( void )
+{
+	PMIC.CTRL = PMIC_HILVLEN_bm | PMIC_MEDLVLEN_bm | PMIC_LOLVLEN_bm;	// enable all level of interrupts
+	sei();
+}
 
 // CONFIGURE LED PORTS-----------------------------------------------------------------------
 void config_led_ports( void )
@@ -88,4 +118,4 @@ void config_led_ports( void )
 }
 
 
-#endif /* RGB-CONNECT-FUNCS_H_ */
+#endif /* RGB_CONNECT_FUNCS_H_*/
