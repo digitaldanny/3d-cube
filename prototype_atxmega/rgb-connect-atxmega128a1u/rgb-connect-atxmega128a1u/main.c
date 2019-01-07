@@ -17,11 +17,8 @@
 
 /*
 TODO:
-	- Configure TCC1 interrupt to send next frame and TCC0 interrupt to repeat the current frame at 240 Hz
 	- More than 3 patterns causes a memory overflow - may need to use external SRAM
-	- Configure ADC module to use potentiometer to control the TIMER/COUNTER interrupt speed ( 4 layer's go at 60 Hz, pattern goes at variable frequency )
 	- Create *.c file for rgb-connect-funcs.h header file
-	- Create sample pattern
 	- Determine pattern memory management...
 	- Connect to GUI to determine correct timer/counter settings
 	- Create an ON/OFF interrupt to enable and disable the pattern
@@ -34,19 +31,10 @@ TODO:
 #include "libs/timer/tcc0.h"
 #include "libs/funcs/rgb-connect-funcs.h"
 #include "libs/adc/adca.h"
-
-// 16 bits represent LEDs on each layer
-// example pattern					L0		L1		L2		L3 (top)
-volatile uint16_t pattern0[] = { 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 
-								 0xFFF0, 0xFFF0, 0xFFF0, 0xFFF0,
-								 0xFF00, 0xFF00, 0xFF00, 0xFF00,
-								 0xF000, 0xF000, 0xF000, 0xF000,
-								 0x0000, 0x0000, 0x0000, 0x0000 };
-volatile uint16_t pattern1[150*8];
-volatile uint16_t pattern2[150*8];
+#include "libs/funcs/pattern-manager.h"
 
 // pattern size must be updated through UART receiver interrupt
-volatile uint8_t p0s = 4*5;			
+volatile uint8_t p0s = 4*8;			
 volatile uint8_t p1s = 1;
 volatile uint8_t p2s = 1;
 
@@ -155,7 +143,11 @@ int main(void)
 // HIGH LEVEL
 ISR ( USARTD0_RXC_vect )
 {
-	//...
+	volatile uint8_t full = storeRxcData();
+	if (full)
+	{
+		full = 0x0;
+	}
 }
 
 // Trigger boolean that allows main code to send next

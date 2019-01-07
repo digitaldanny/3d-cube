@@ -129,6 +129,9 @@
     <Compile Include="libs\adc\adca.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="libs\funcs\pattern-manager.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="libs\funcs\rgb-connect-funcs.h">
       <SubType>compile</SubType>
     </Compile>

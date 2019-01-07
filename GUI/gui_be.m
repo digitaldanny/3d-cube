@@ -30,13 +30,17 @@ classdef gui_be < handle
             obj.ser.DataBits = 8;           % 8 data bits per message
             obj.ser.OutputBufferSize = 10;  % 1 byte for processor message, 1 byte frame #, 8 bytes for pattern data
             
-            % connect to serial port
-            try
-                fopen(obj.ser);             % open COM port communication
-                status = true;              % returns true if there is a COM port connection
-            catch
-                status = false;             % returns false if unable to connect to COM port
-            end
+            status = true; % notifies function user that the function completed successfully
+        end
+        
+        % write a message to the connected COM port
+        % using configurations from function "connectToComPort"
+        function status = comWrite( obj, input )
+            
+            fopen( obj.ser );
+            fprintf( obj.ser, input );
+            fclose( obj.ser );
+            
         end
         
     end
